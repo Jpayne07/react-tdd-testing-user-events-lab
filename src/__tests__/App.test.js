@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
 
+
 import App from "../App";
+import userEvent from "@testing-library/user-event";
+
+
 
 // Portfolio Elements
 test("displays a top-level heading with the text `Hi, I'm _______`", () => {
@@ -67,25 +71,67 @@ test("displays the correct links", () => {
 // Newsletter Form - Initial State
 test("the form includes text inputs for name and email address", () => {
   // your test code here
+  render(<App />);
+  const userNameInput = screen.getByLabelText("Enter Username")
+  expect(userNameInput).toHaveDisplayValue("")
+
+  const emailInput = screen.getByLabelText("Enter Email")
+  expect(emailInput).toHaveDisplayValue("")
 });
 
 test("the form includes three checkboxes to select areas of interest", () => {
-  // your test code here
+  render(<App />)
+  const checkboxes = screen.getAllByRole("checkbox")
+  checkboxes.forEach((checkbox) => {
+    expect(checkbox).not.toBeChecked();
+  });
+
 });
 
 test("the checkboxes are initially unchecked", () => {
-  // your test code here
+   render(<App />)
+  const checkboxes = screen.getAllByRole("checkbox")
+  checkboxes.forEach((checkbox) => {
+    expect(checkbox).not.toBeChecked();
+  });
+
 });
 
 // Newsletter Form - Adding Responses
 test("the page shows information the user types into the name and email address form fields", () => {
-  // your test code here
+  render(<App />);
+
+  const fullName = screen.getByLabelText(/enter Username/i);
+  const emailAddress = screen.getByLabelText(/enter email/i);
+
+  userEvent.type(fullName, "Fname Lname");
+  userEvent.type(emailAddress, "fnamelname@email.com");
+
+  expect(fullName).toHaveValue("Fname Lname");
+  expect(emailAddress).toHaveValue("fnamelname@email.com");
 });
 
 test("checked status of checkboxes changes when user clicks them", () => {
-  // your test code here
+  render(<App />);
+  
+  const checkbox1 = screen.getByRole("checkbox", { name: /checkbox 1/i });
+  const checkbox2 = screen.getByRole("checkbox", { name: /checkbox 2/i });
+  const checkbox3 = screen.getByRole("checkbox", { name: /checkbox 3/i });
+
+  userEvent.click(checkbox1)
+  userEvent.click(checkbox2)
+  userEvent.click(checkbox3)
+
+  expect(checkbox1).toBeChecked()
+  expect(checkbox2).toBeChecked()
+  expect(checkbox3).toBeChecked()
+  
 });
 
 test("a message is displayed when the user clicks the Submit button", () => {
-  // your test code here
+  render(<App />);
+  userEvent.click(screen.getByRole("button"));
+  
+  const message = screen.getByText(/Thanks/i);
+  expect(message).toBeInTheDocument();
 });
